@@ -13,14 +13,14 @@ class Book extends Component {
                 <div className="book-top">
                     <div className="book-cover" style={{ width: 128, height: 192, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
                     <div className="book-shelf-changer">
-                        <SwitchShelfSetting currentShelf={book.shelf} onUpdateShelf={this.onUpdatingShelf}/>
+                        <SwitchShelfSetting currentShelf={book.hasOwnProperty('shelf') ? book.shelf: 'none'} onUpdateShelf={this.onUpdatingShelf}/>
                     </div>
                 </div>
                 <div className="book-title">
                     {book.title}
                 </div>
                 <div className="book-authors">
-                    {book.authors.join(" ")}
+                    {book.hasOwnProperty('authors') && book.authors.join(" ")}
                 </div>
             </div>
         );

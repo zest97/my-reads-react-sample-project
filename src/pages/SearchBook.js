@@ -1,8 +1,27 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
+import {search as SearchBookByLabel} from '../BooksAPI'
+import Book from '../components/Book'
+import PropTypes from 'prop-types'
 
 class SearchBook extends Component {
+    state = {
+        searchBooks: []
+    }
+    handleInputChange = (e) => {
+        const query = e.target.value;
+        if (query !== '') {
+            SearchBookByLabel(query, 5).then((books) => {
+                if (books.hasOwnProperty('error')) {
+                    this.setState(() => ({searchBooks: []}));
+                } else {
+                    this.setState(() => ({searchBooks: books}));
+                }
+            })
+        }
+    }
     render() {
+        const { onUpdateBookShelf } = this.props;
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -16,16 +35,27 @@ class SearchBook extends Component {
                 However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
                 you don't find a specific author or title. Every search is limited by search terms.
                 */}
-                <input type="text" placeholder="Search by title or author"/>
+                <input
+                    type="text"
+                    onChange={this.handleInputChange}
+                    placeholder="Search by title or author"/>
 
                 </div>
                 </div>
                 <div className="search-books-results">
-                <ol className="books-grid"></ol>
+                    <ol className="books-grid">
+                        {this.state.searchBooks.length > 0 && this.state.searchBooks.map((book) => (
+                            <Book key={book.id} book={book} onUpdateShelf={onUpdateBookShelf}/>
+                        ))}
+                    </ol>
                 </div>
             </div>            
         );
     }
+}
+
+SearchBook.propTypes = {
+    onUpdateBookShelf: PropTypes.func.isRequired
 }
 
 export default SearchBook;
