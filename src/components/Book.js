@@ -8,10 +8,13 @@ class Book extends Component {
     }
     render() {
         const { book } = this.props;
+        const thumbnail = book.hasOwnProperty('imageLinks') ? book.imageLinks.thumbnail : 'https://books.google.com/books/content?printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api';
         return (
             <div className="book">
                 <div className="book-top">
-                    <div className="book-cover" style={{ width: 128, height: 192, backgroundImage: `url(${book.imageLinks.thumbnail})` }}></div>
+                    <div
+                        className="book-cover"
+                        style={{ width: 128, height: 192, backgroundImage: `url(${thumbnail})` }}></div>
                     <div className="book-shelf-changer">
                         <SwitchShelfSetting currentShelf={book.hasOwnProperty('shelf') ? book.shelf: 'none'} onUpdateShelf={this.onUpdatingShelf}/>
                     </div>
