@@ -10,18 +10,21 @@ class SearchBook extends Component {
     }
     handleInputChange = (e) => {
         const query = e.target.value;
-        if (query !== '') {
+
+        if (query === '') {
+            this.setState(() => ({searchBooks: []}));
+        } else {
             SearchBookByLabel(query, 5).then((books) => {
                 if (books.hasOwnProperty('error')) {
                     this.setState(() => ({searchBooks: []}));
                 } else {
                     this.setState(() => ({searchBooks: books}));
                 }
-            })
+            });
         }
     }
     render() {
-        const { onUpdateBookShelf } = this.props;
+        const { books, onUpdateBookShelf } = this.props;
         return (
             <div className="search-books">
                 <div className="search-books-bar">
@@ -44,9 +47,15 @@ class SearchBook extends Component {
                 </div>
                 <div className="search-books-results">
                     <ol className="books-grid">
-                        {this.state.searchBooks.length > 0 && this.state.searchBooks.map((book) => (
-                            <Book key={book.id} book={book} onUpdateShelf={onUpdateBookShelf}/>
-                        ))}
+                        {this.state.searchBooks.length > 0 && this.state.searchBooks.map((book) => {
+                            const BookInMyShelf = books.filter((bookItem) => (bookItem.id === book.id));
+                            if (BookInMyShelf.length > 0) {
+                                book.shelf = BookInMyShelf[0].shelf;
+                            }
+                            return (
+                                <Book key={book.id} book={book} onUpdateShelf={onUpdateBookShelf}/>
+                            );
+                        })}
                     </ol>
                 </div>
             </div>            
@@ -55,6 +64,7 @@ class SearchBook extends Component {
 }
 
 SearchBook.propTypes = {
+    books: PropTypes.array.isRequired,
     onUpdateBookShelf: PropTypes.func.isRequired
 }
 
