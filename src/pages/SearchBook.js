@@ -3,14 +3,25 @@ import { Link } from 'react-router-dom'
 import {search as SearchBookByLabel} from '../BooksAPI'
 import Book from '../components/Book'
 import PropTypes from 'prop-types'
+import { debounce } from 'lodash';
 
 class SearchBook extends Component {
     state = {
         searchBooks: []
     }
     handleInputChange = (e) => {
-        const query = e.target.value;
+        e.persist();
 
+        if (!this.handleInputDebounced) {
+            this.handleInputDebounced = debounce(() => {
+                const query = e.target.value;
+                this.queryBook(query);
+            }, 300);
+        }
+
+        this.handleInputDebounced();
+    }
+    queryBook = (query) => {
         if (query === '') {
             this.setState(() => ({searchBooks: []}));
         } else {
@@ -21,6 +32,11 @@ class SearchBook extends Component {
                     this.setState(() => ({searchBooks: books}));
                 }
             });
+        }
+    }
+    componentWillUnmount() {
+        if (!this.handleInputDebounced) {
+            this.handleInputDebounced.cancel();
         }
     }
     render() {
